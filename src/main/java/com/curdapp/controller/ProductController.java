@@ -1,8 +1,9 @@
 package com.curdapp.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curdapp.Dto.ProductDTO;
@@ -25,9 +27,15 @@ public class ProductController {
     private ProductService productService;
     
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
-    }
+public ResponseEntity<Page<ProductDTO>> getAllProducts(
+    @RequestParam(defaultValue = "0") int page, 
+    @RequestParam(defaultValue = "2") int size
+) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<ProductDTO> products = productService.getAllProducts(pageable);
+    return ResponseEntity.ok(products);
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable int id) {
